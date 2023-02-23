@@ -1,150 +1,136 @@
-<style scoped>
+<style scoped lang="less">
+.main{
+  text-align: center;
+  box-sizing: border-box;
+  height: 100vh;
+  display: flex;
+  flex-flow: column nowrap;
+  background-color: grey;
+  /*顶部信息*/
+  &_header{
+    height: 50px;
+    background-color: red;
+  }
 
-  .title{
-    height: 40px;
-    background-color: hotpink;
-    width: 100%;
-  }
-  .wrapper{
-    height: 100vh;
-  }
-  .list{
-    background-color: blue;
-    height: calc(100% - 40px);
+  /*列表信息*/
+  &_list{
+    flex: 1;
     overflow: scroll;
+    padding: 0 10px;
   }
+
+  /*底部信息*/
+  &_footer{
+    height: 50px;
+    background-color: hotpink;
+  }
+}
 </style>
 
 <template>
-  <div class="wrapper">
-    <div class="title">我是标题</div>
-    <!--<van-list class="list" @load="onLoad" offset="50" :immediate-check="false" v-model:loading="loading" :finished="finished">-->
-    <!--  <div v-for="item in list" style="border-bottom: 2px solid red">-->
-    <!--    <div>{{ item.email }}</div>-->
-    <!--    <div>{{ item.phone }}</div>-->
-    <!--    <div>{{ item.name }}</div>-->
-    <!--  </div>-->
-    <!--</van-list>-->
-
-    <van-list
-        v-model:loading="loading"
-        :finished="finished"
-        finished-text="没有更多了"
-        @load="onLoad"
-    >
-      <van-cell v-for="item in list" :key="item" title="1213" />
+  <div class="main">
+    <div class="main_header">我是顶部信息(定时器3秒加载数据)</div>
+    <!--滚动列表-->
+    <!---->
+    <van-list class="main_list" offset="50" v-model:loading="loading" :finished="finished" @load="onLoad" >
+      <!-- table等同于一个自定义的列表组件 -->
+      <Table :columns="columns" :list="list"/>
     </van-list>
-
-
+    <!--底部展示信息-->
+    <div class="main_footer">我是底部信息</div>
   </div>
 </template>
 
-
 <script setup lang="ts">
-import {ref} from "vue"
-const loading = ref(false);//是否正在加载
-const finished = ref(false);//是否加载完成
-/* 假列表数据 */
-const list = ref<any[]>([
-  {
-    "email": "iaculis.aliquet.diam@protonmail.net",
-    "phone": "073-491-3662",
-    "name": "Amos V. Garcia"
-  },
-  {
-    "email": "ultricies.sem@outlook.org",
-    "phone": "066-765-8163",
-    "name": "Ira W. Hopper"
-  },
-  {
-    "email": "nisi.a.odio@google.ca",
-    "phone": "051-919-1606",
-    "name": "Edward U. O'donnell"
-  },
-  {
-    "email": "pellentesque@icloud.com",
-    "phone": "027-494-3676",
-    "name": "Susan S. Patton"
-  },
-  {
-    "email": "a@protonmail.com",
-    "phone": "055-275-1380",
-    "name": "Phyllis P. Cook"
-  },
-  {
-    "email": "non.bibendum@hotmail.ca",
-    "phone": "064-287-6295",
-    "name": "Noble E. Doyle"
-  },
-  {
-    "email": "ut.nulla.cras@google.net",
-    "phone": "038-744-6383",
-    "name": "Mohammad C. Buckner"
-  },
-  {
-    "email": "convallis@protonmail.net",
-    "phone": "057-684-7538",
-    "name": "Cain G. Fletcher"
-  },
-  {
-    "email": "purus@google.couk",
-    "phone": "062-557-9365",
-    "name": "Deirdre A. Booker"
-  },
-  {
-    "email": "cras.interdum@protonmail.couk",
-    "phone": "067-154-5658",
-    "name": "Pamela Y. Mccoy"
-  },
-  {
-    "email": "suspendisse.ac@icloud.com",
-    "phone": "052-494-2627",
-    "name": "Nita U. Sosa"
-  },
-  {
-    "email": "justo.praesent@hotmail.net",
-    "phone": "051-514-6890",
-    "name": "Jana P. Moon"
-  },
-  {
-    "email": "nullam.nisl@google.edu",
-    "phone": "085-757-5754",
-    "name": "Heidi G. Ryan"
-  },
-  {
-    "email": "turpis.nulla@outlook.couk",
-    "phone": "054-118-3427",
-    "name": "Kay J. Webb"
-  },
-  {
-    "email": "in@hotmail.couk",
-    "phone": "025-283-5281",
-    "name": "Jerome C. Witt"
-  }
-])
-
-/*加载更多*/
-const onLoad = () => {
-  console.log('加载更多')
-  const mockData = [
-    {
-      "email": "李白mi.tempor@hotmail.couk",
-      "phone": "073-518-4889",
-      "name": "Alma P. Little"
-    },
-    {
-      "email": "李黑iaculis.aliquet@yahoo.net",
-      "phone": "013-173-8625",
-      "name": "Ruby H. Bird"
-    },
-  ]
-  setTimeout(() =>{
-    loading.value = false;//加载状态结束
-    list.value.push(mockData);
-    if(list.value.length >= 20){
-      finished.value = true;
-    }
-  },2000)
+import {computed, ref} from "vue";
+import {ColumnProps} from "./components/table/types";
+import Table from "./components/table/index.vue";//自定义组件props
+export interface List {
+  name:string,
+  phone:string,
+  email:string,
 }
+//table栏列
+const columns = ref<ColumnProps[]>([
+  { headerTitle: '姓名', key:'name', headerAlign:'center',contentAlign:'center'},
+  { headerTitle: '手机', key:'phone',headerAlign:'center',contentAlign:'center' } ,
+  { headerTitle: '邮箱', key:'email',headerAlign:'center',contentAlign:'center', }
+])
+//列表数据
+const list = ref<List[]>([]);
+//是否正在加载
+const loading = ref<boolean>(false);
+//数据总长度
+const total = ref<number>(0);
+//数据是否加载完成
+const finished = computed<boolean>(() => !!total.value && list.value?.length >= total.value);
 
+
+
+
+
+
+
+/* 请求加载数据(immediate-check	默认为true,所以会初次加载) */
+const onLoad =  () => {
+  console.log('我被执行了')
+  loading.value = true;//加载中 //(也可以交给van-list进行双向绑定,这里就单向数据流的方式使用)
+  //准备的假数据
+  const mockData:List[] = [
+    {
+      "name": "Keith Luna",
+      "phone": "1-776-470-4892",
+      "email": "nisi.mauris@icloud.org"
+    },
+    {
+      "name": "Kato Roman",
+      "phone": "1-633-319-3562",
+      "email": "porttitor.interdum@protonmail.ca"
+    },
+    {
+      "name": "Nigel Tran",
+      "phone": "(564) 534-1239",
+      "email": "eros.non@outlook.com"
+    },
+    {
+      "name": "Dorian Callahan",
+      "phone": "(434) 337-6257",
+      "email": "fusce@yahoo.ca"
+    },
+    {
+      "name": "Owen Bryan",
+      "phone": "1-282-836-1673",
+      "email": "arcu.aliquam@google.edu"
+    },
+    {
+      "name": "Pascale Mccall",
+      "phone": "1-255-423-5670",
+      "email": "vitae@yahoo.edu"
+    },
+    {
+      "name": "Colt Cherry",
+      "phone": "1-619-487-2543",
+      "email": "euismod.ac@outlook.ca"
+    },
+    {
+      "name": "Wayne Frederick",
+      "phone": "(556) 423-1378",
+      "email": "faucibus.id@yahoo.edu"
+    },
+    {
+      "name": "Ralph Wilder",
+      "phone": "(754) 571-6219",
+      "email": "sit.amet@outlook.ca"
+    },
+    {
+      "name": "Vladimir Rich",
+      "phone": "(457) 641-3743",
+      "email": "eleifend.non@outlook.edu"
+    }
+  ]
+  setTimeout(() => {
+    list.value = list.value.concat(mockData);//添加假数据
+    loading.value = false;//加载完成
+  },500)
+}
 </script>
